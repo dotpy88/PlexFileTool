@@ -1,0 +1,3 @@
+{"apikey"  : "<insert tvdb api key here>",
+ "userkey" : "<insert tvdb user key here>",
+ "username": "<insert tvdb user name here>"}

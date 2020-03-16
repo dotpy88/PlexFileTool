@@ -1,0 +1,2 @@
+{"apikey": "<insert mvdb api key here>",
+ "username": "<insert mvdb username here>"}
