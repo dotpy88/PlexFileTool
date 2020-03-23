@@ -5,51 +5,46 @@ import FindClientClass
 import DigClientClass
 import sys
 
-def movies():
-    global current_option
-    canvas.pack_forget()
+
+def destroycurrent(current_option):
     if current_option == 'TvShows':
         tvclient.destroyelements()
     if current_option == 'Find':
         findclient.destroyelements()
     if current_option == 'Dig':
         digclient.destroyelements()
+    if current_option == 'Movies':
+        movieclient.destroyelements()
+
+def movies():
+    global current_option
+    canvas.pack_forget()
+    if current_option:
+        destroycurrent(current_option)
     current_option = 'Movies'
     movieclient.loadmovieclient()
 
 def tvshows():
     global current_option
     canvas.pack_forget()
-    if current_option == 'Movies':
-        movieclient.destroyelements()
-    if current_option == 'Find':
-        findclient.destroyelements()
-    if current_option == 'Dig':
-        digclient.destroyelements()
+    if current_option:
+        destroycurrent(current_option)
     current_option = 'TvShows'
     tvclient.loadtvshowclient()
 
 def findgenre():
     global current_option
     canvas.pack_forget()
-    if current_option == 'Movies':
-        movieclient.destroyelements()
-    if current_option == 'TvShows':
-        tvclient.destroyelements()
-    if current_option == 'Dig':
-        digclient.destroyelements()
+    if current_option:
+        destroycurrent(current_option)
     current_option = 'Find'
     findclient.loadfindclient()
 
 def dig():
     global current_option
     canvas.pack_forget()
-    if current_option == 'Movies':
-        movieclient.destroyelements()
-    if current_option == 'TvShows':
-        tvclient.destroyelements()
-    if current_option == 'Find':
-        findclient.destroyelements()
+    if current_option:
+        destroycurrent(current_option)
     current_option = 'Dig'
     digclient.loaddigclient()
 
