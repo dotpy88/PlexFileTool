@@ -125,6 +125,10 @@ class DigClient():
             self.discover_butt.configure(state=tk.NORMAL)
 
     def getmovies(self):
+        valid_video_extensions = ['.webm', '.mkv', '.mpg', '.mp2', '.mpeg', '.mpe', '.mpv', '.ogg', '.mp4', '.m4p',
+                                  '.m4v', '.avi', '.wmv', '.mov', '.qt', '.flv', '.swf']
+        valid_subtitle_extensions = ['.aqt', '.cvd', '.dks', '.jss', '.sub', '.ttxt', '.mpl', '.pjs', '.psb', '.rt',
+                                     '.smi', '.ssf', '.srt', '.ssa', '.usf']
         self.listbox2.delete(0, tk.END)
         self.lookup_butt.configure(state=tk.DISABLED)
         new_folder = self.foldername.get()
@@ -133,16 +137,36 @@ class DigClient():
         self.msg_label2.update()
         self.files_to_change = []
         self.new_location = os.path.join(self.curr_dir, new_folder)
+
+        subtitle_name = ""
+        subtitle_root = ""
         for file in self.dir_files:
             file_dict = {}
             self.listbox2.update()
             splitfile = os.path.split(file)[1]
             new_file = os.path.join(self.new_location, splitfile)
+
+            rootdir = re.search(rf'{re.escape(self.curr_dir)}\\(.*?)\\', file)
+            if rootdir:
+                if subtitle_name:
+                    current_root = rootdir.groups()[0]
+                    if current_root == subtitle_root:
+                        for extension in valid_subtitle_extensions:
+                            if file.endswith(extension):
+                                new_file = os.path.join(self.new_location, subtitle_name+extension)
+                        subtitle_name = ""
+
+                for extension in valid_video_extensions:
+                    if file.endswith(extension):
+                        subtitle_name = os.path.split(file)[1].strip(extension)
+                        subtitle_root = rootdir.groups()[0]
+
             msg = "New Location >> %s" % (new_file)
             self.listbox2.insert(tk.END, msg)
             file_dict['old'] = file
             file_dict['new'] = new_file
             self.files_to_change.append(file_dict)
+
         self.listbox2.configure(state=tk.DISABLED)
         if self.files_to_change:
             self.discover_butt.configure(state=tk.DISABLED)
