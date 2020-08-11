@@ -138,28 +138,37 @@ class DigClient():
         self.files_to_change = []
         self.new_location = os.path.join(self.curr_dir, new_folder)
 
-        subtitle_name = ""
-        subtitle_root = ""
+        root_dict = {}
         for file in self.dir_files:
             file_dict = {}
             self.listbox2.update()
             splitfile = os.path.split(file)[1]
             new_file = os.path.join(self.new_location, splitfile)
-
+            ext_match = r'(\.\w+)$'
+            ext_groups = re.search(ext_match, splitfile)
+            if not ext_groups:
+                continue
+            ext = ext_groups.groups()[0]
             rootdir = re.search(rf'{re.escape(self.curr_dir)}\\(.*?)\\', file)
             if rootdir:
-                if subtitle_name:
-                    current_root = rootdir.groups()[0]
-                    if current_root == subtitle_root:
-                        for extension in valid_subtitle_extensions:
-                            if file.endswith(extension):
-                                new_file = os.path.join(self.new_location, subtitle_name+extension)
-                        subtitle_name = ""
+                current_root = rootdir.groups()[0]
+                if not root_dict.get(current_root):
+                    root_dict[current_root] = {'movie':'','subtitle':'','root':''}
 
-                for extension in valid_video_extensions:
-                    if file.endswith(extension):
-                        subtitle_name = os.path.split(file)[1].strip(extension)
-                        subtitle_root = rootdir.groups()[0]
+                if root_dict[current_root]['movie']:
+                    if current_root == root_dict[current_root]['root']:
+                        if ext in valid_subtitle_extensions and (('nglish' in file and 'orced' not in file) or root_dict[current_root]['movie'] in file) and not root_dict[current_root]['subtitle']:
+                            new_file = os.path.join(self.new_location, root_dict[current_root]['movie']+ext)
+                            root_dict[current_root]['subtitle'] = splitfile.strip(ext)
+                        else:
+                            continue
+
+                if ext in valid_video_extensions:
+                    root_dict[current_root]['movie'] = splitfile.strip(ext)
+                    root_dict[current_root]['root'] = current_root
+
+                if ext not in valid_video_extensions and ext not in valid_subtitle_extensions:
+                    continue
 
             msg = "New Location >> %s" % (new_file)
             self.listbox2.insert(tk.END, msg)
